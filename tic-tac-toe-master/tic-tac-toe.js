@@ -5,23 +5,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const newGameBtn = document.querySelector(".btn"); // New Game button
     const originalStatus = "Move your mouse over a square and click to play an X or an O.";
 
-    // Step 1: Add square class to each div
     for (let i = 0; i < squares.length; i++) {
         squares[i].classList.add("square");
     }
 
-    // Step 2: Game state
     let currentPlayer = "X";                   // Current player
     let gameState = Array(9).fill(null);       // Board state
 
-    // Step 3: Winning combinations
     const winningCombos = [
         [0,1,2],[3,4,5],[6,7,8], // rows
         [0,3,6],[1,4,7],[2,5,8], // columns
         [0,4,8],[2,4,6]          // diagonals
     ];
 
-    // Step 4: Check winner
     function checkWinner() {
         for (let combo of winningCombos) {
             const [a,b,c] = combo;
@@ -34,11 +30,9 @@ document.addEventListener("DOMContentLoaded", function () {
         return null; // No winner yet
     }
 
-    // Step 5: Add events to each square
     for (let i = 0; i < squares.length; i++) {
         const square = squares[i];
 
-        // Click event
         square.addEventListener("click", function () {
             // Only allow if square is empty and game is not won
             if (!gameState[i] && !status.classList.contains("you-won")) {
@@ -62,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Step 6: New Game button click event
     newGameBtn.addEventListener("click", function () {
         // Clear all squares
         for (let i = 0; i < squares.length; i++) {
@@ -79,3 +72,4 @@ document.addEventListener("DOMContentLoaded", function () {
         status.classList.remove("you-won");
     });
 });
+
