@@ -1,7 +1,9 @@
-// Wait until the HTML is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
     const board = document.getElementById("board");
+    const status = document.getElementById("status");
     const squares = board.getElementsByTagName("div");
+    const newGameBtn = document.querySelector(".btn"); // New Game button
+    const originalStatus = "Move your mouse over a square and click to play an X or an O.";
 
     // Step 1: Add square class to each div
     for (let i = 0; i < squares.length; i++) {
@@ -9,26 +11,71 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Step 2: Game state
-    let currentPlayer = "X"; // Start with X
-    let gameState = Array(9).fill(null); // Track the board (9 squares)
+    let currentPlayer = "X";                   // Current player
+    let gameState = Array(9).fill(null);       // Board state
 
-    // Step 3: Add click event to each square
+    // Step 3: Winning combinations
+    const winningCombos = [
+        [0,1,2],[3,4,5],[6,7,8], // rows
+        [0,3,6],[1,4,7],[2,5,8], // columns
+        [0,4,8],[2,4,6]          // diagonals
+    ];
+
+    // Step 4: Check winner
+    function checkWinner() {
+        for (let combo of winningCombos) {
+            const [a,b,c] = combo;
+            if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+                status.textContent = `Congratulations! ${gameState[a]} is the Winner!`;
+                status.classList.add("you-won");
+                return gameState[a]; // Return winner
+            }
+        }
+        return null; // No winner yet
+    }
+
+    // Step 5: Add events to each square
     for (let i = 0; i < squares.length; i++) {
-        squares[i].addEventListener("click", function () {
-            // Only allow clicking if square is empty
-            if (!gameState[i]) {
-                // Update the square text
-                squares[i].textContent = currentPlayer;
+        const square = squares[i];
 
-                // Add the class X or O for styling
-                squares[i].classList.add(currentPlayer);
-
-                // Update game state
+        // Click event
+        square.addEventListener("click", function () {
+            // Only allow if square is empty and game is not won
+            if (!gameState[i] && !status.classList.contains("you-won")) {
+                square.textContent = currentPlayer;
+                square.classList.add(currentPlayer);
                 gameState[i] = currentPlayer;
 
-                // Switch players
-                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                if (!checkWinner()) {
+                    currentPlayer = currentPlayer === "X" ? "O" : "X";
+                }
             }
         });
+
+        // Hover effect
+        square.addEventListener("mouseenter", function () {
+            if (!gameState[i]) square.classList.add("hover");
+        });
+
+        square.addEventListener("mouseleave", function () {
+            square.classList.remove("hover");
+        });
     }
+
+    // Step 6: New Game button click event
+    newGameBtn.addEventListener("click", function () {
+        // Clear all squares
+        for (let i = 0; i < squares.length; i++) {
+            squares[i].textContent = "";
+            squares[i].classList.remove("X", "O", "hover");
+        }
+
+        // Reset game state and current player
+        gameState = Array(9).fill(null);
+        currentPlayer = "X";
+
+        // Reset status message
+        status.textContent = originalStatus;
+        status.classList.remove("you-won");
+    });
 });
